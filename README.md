@@ -1,6 +1,6 @@
-# 🚀 Multi-Chain Alpha Trading Terminal
+# 🚀 Zero — Multi-Chain Alpha Trading Terminal
 
-A comprehensive trading terminal for meme coins across **6 blockchains** with multi-interface support.
+From 0 to hero. A comprehensive trading terminal for meme coins across **6 blockchains** with multi-interface support.
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)
@@ -345,4 +345,4 @@ MIT License - feel free to use, modify, and distribute.
 
 ⭐ Star this repo if you find it useful!
 
-**GitHub:** https://github.com/stephenclawdbot-png/solana-alpha-terminal
+**GitHub:** https://github.com/stephenclawdbot-png/zero
