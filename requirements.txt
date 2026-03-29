@@ -4,3 +4,4 @@ flask>=2.3.0
 websockets>=11.0
 web3>=6.0.0
 eth-account>=0.8.0
+solders>=0.20.0  # For Solana keypair generation

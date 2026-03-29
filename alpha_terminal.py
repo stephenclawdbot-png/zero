@@ -350,8 +350,10 @@ class MultiChainAlphaTerminal:
             print("│ 4. Multi-Chain Scanner                         │")
             print("│ 5. Switch Chain                                │")
             print("│ 6. Token Info (EVM)                            │")
-            print("│ 7. Alpha Scanner Settings                      │")
-            print("│ 8. Exit                                        │")
+            print("│ 7. Vanity Wallet Generator 🎨                  │")
+            print("│ 8. Pump.fun Deployer 🚀                        │")
+            print("│ 9. Alpha Scanner Settings                      │")
+            print("│ 10. Exit                                       │")
             print("└────────────────────────────────────────────────┘")
             
             choice = input("\nSelect option: ").strip()
@@ -369,8 +371,12 @@ class MultiChainAlphaTerminal:
             elif choice == '6':
                 self.cmd_token_info()
             elif choice == '7':
-                self.cmd_scanner_settings()
+                self.cmd_vanity_wallet()
             elif choice == '8':
+                self.cmd_pump_fun_deploy()
+            elif choice == '9':
+                self.cmd_scanner_settings()
+            elif choice == '10':
                 print("👋 Goodbye!")
                 break
             else:
@@ -510,6 +516,125 @@ class MultiChainAlphaTerminal:
         if toggle == 'y':
             self.alerts_enabled = not self.alerts_enabled
             print(f"Alerts: {'ON' if self.alerts_enabled else 'OFF'}")
+    
+    def cmd_vanity_wallet(self):
+        """Generate vanity wallet address"""
+        try:
+            from vanity_generator import VanityAddressGenerator
+            
+            print("""
+╔══════════════════════════════════════════════════════════════════╗
+║              🎨 ZERO Vanity Address Generator 🎨                ║
+╚══════════════════════════════════════════════════════════════════╝
+            """)
+            
+            generator = VanityAddressGenerator()
+            
+            pattern = input("Enter pattern to search (e.g., 'DOGE', '0000'): ").strip()
+            
+            if len(pattern) < 1:
+                print("❌ Pattern required")
+                return
+            
+            # Estimate difficulty
+            estimate = generator.estimate_difficulty(pattern)
+            
+            print(f"\n📊 Difficulty:")
+            print(f"   Pattern: {pattern}")
+            print(f"   Estimated time: {estimate['estimated_time_formatted']}")
+            print(f"   Difficulty: {estimate['difficulty']}")
+            
+            confirm = input("\n⚡ Start generation? (y/n): ").strip().lower()
+            if confirm != 'y':
+                return
+            
+            result = generator.generate_vanity_wallet(
+                pattern=pattern,
+                is_prefix=True,
+                max_attempts=5000000
+            )
+            
+            if result:
+                print(f"\n✅ VANITY ADDRESS FOUND!")
+                print(f"   Address: {result.address}")
+                print(f"   Private Key: {result.private_key[:30]}...")
+                print(f"   Attempts: {result.attempts:,}")
+                print(f"   Time: {result.time_taken:.2f}s")
+                
+                save = input("\n💾 Save to file? (y/n): ").strip().lower()
+                if save == 'y':
+                    generator.save_wallet(result)
+                    print("✅ Wallet saved!")
+            else:
+                print("❌ Pattern not found. Try a shorter pattern.")
+                
+        except ImportError:
+            print("❌ Vanity generator requires 'solders' library")
+            print("💡 Install: pip install solders")
+    
+    def cmd_pump_fun_deploy(self):
+        """Create Pump.fun token deployment"""
+        try:
+            from vanity_generator import PumpFunDeployer
+            
+            print("""
+╔══════════════════════════════════════════════════════════════════╗
+║              🚀 Pump.fun Token Deployer 🚀                      ║
+╚══════════════════════════════════════════════════════════════════╝
+            """)
+            
+            name = input("Token Name: ").strip()
+            symbol = input("Token Symbol: ").strip().upper()
+            description = input("Description: ").strip()
+            image_url = input("Image URL (or leave blank): ").strip()
+            
+            print("\n🎨 Vanity Mint Address (optional)")
+            print("   Leave blank to skip (saves time)")
+            vanity_pattern = input("Pattern (e.g., 'DOGE', 'Lambo'): ").strip()
+            
+            deployer = PumpFunDeployer()
+            
+            config = deployer.create_token_config(
+                name=name,
+                symbol=symbol,
+                description=description,
+                image_url=image_url or "https://example.com/image.png",
+                vanity_pattern=vanity_pattern if vanity_pattern else None
+            )
+            
+            # Show deployment info
+            costs = deployer.estimate_deployment_cost()
+            
+            print(f"\n📋 Token Configuration:")
+            print(f"   Name: {config['name']}")
+            print(f"   Symbol: {config['symbol']}")
+            print(f"   Description: {config['description']}")
+            
+            if 'vanity_mint' in config:
+                print(f"\n🏆 Vanity Mint:")
+                print(f"   Address: {config['vanity_mint']['address']}")
+                print(f"   Pattern: {config['vanity_mint']['pattern']}")
+                print(f"   Attempts: {config['vanity_mint']['attempts']:,}")
+            
+            print(f"\n💰 Estimated Costs:")
+            print(f"   Pump.fun Fee: {costs['pump_fun_fee']} SOL")
+            print(f"   Rent Exempt: {costs['rent_exempt']} SOL")
+            print(f"   Total: ~{costs['total_sol']} SOL")
+            print(f"   Recommendation: {costs['recommendation']}")
+            
+            # Generate script
+            deployer.generate_deploy_script(config)
+            
+            print("\n⚠️  IMPORTANT:")
+            print("   This creates a TEMPLATE deployment script.")
+            print("   For actual deployment:")
+            print("   1. Visit pump.fun and connect your wallet")
+            print("   2. Use the Solana CLI with Pump.fun program")
+            print("   3. Or modify the generated script with real solana-py")
+            
+        except ImportError:
+            print("❌ Deployer requires 'solders' library")
+            print("💡 Install: pip install solders")
 
 
 def main():
